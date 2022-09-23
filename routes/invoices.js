@@ -2,58 +2,20 @@ var express = require('express');
 var router = express.Router();
 const mongoose = require('mongoose');
 const invoiceModel = require('../models/invoice')
+const productModel = require('../models/product')
 const { route } = require('.')
 
-/* GET users listing. */
-const connection = mongoose.connection 
-connection.on('error', console.error.bind(console, 'connection error:'));
-// connection.once('open', async function () {
 
-//   const collection  = connection.db.collection("products");
-//   collection.find({}).toArray(function(err, data){
-    
-//       let totalamount = data.filter((amount, index) =>{
-//         // if(data.product_name == "caseiPad" || req.body.order.product_name == "caseiPad"){
-//         //   data.amount - req.body.order
-        
-//         // }
-//       })
-//   });
-  
-// });
+/* GET users listing. */
 //create 
 router.post('/',async function(req,res,next){
-  // let orders = req.body.order
-  // let a = orders.map((item)=>{
-  //   let productname = item.product_name
-  //   let amountname = item.amount
-  //   return { productname,amountname }
-  // })
-  // console.log(a)
-  // const connection = mongoose.connection 
-  // connection.on('error', console.error.bind(console, 'connection error:'));
-  connection.once('open', async function () {
-
-    const collection  = connection.db.collection("products");
-    collection.find({}).toArray(function(err, data){
-      console.log(data)
-        let totalamount = data.filter((amount, index) =>{
-          if(data.product_name == "caseiPad" || req.body.order.product_name == "caseiPad"){
-            data.amount - req.body.order
-          
-          }
+  productModel.findById(req.body.ObjectId)
+    .then(product => {
+      if(!product){
+        return res.status(404).json({
+          message: "Product not found"
         })
-    });
-    
-  });
- 
-    // console.log(req.body.order)
-    let product = req.body.order
-    let totalprices = 0
-    
-    product.map((item)=>{
-        totalprices = totalprices + item.price
-        // console.log(totalprices)
+      }
     })
     try{
         let body = req.body

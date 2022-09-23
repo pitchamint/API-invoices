@@ -1,8 +1,10 @@
 var express = require('express');
 var router = express.Router();
 const mongoose = require('mongoose');
-const userModel = require('../models/user.js')
-const { route } = require('.')
+const productsModel = require('../models/product')
+const { route } = require('.');
+const { request } = require('../app');
+
 
 
 /* GET users listing. */
@@ -10,21 +12,30 @@ const { route } = require('.')
 router.post('/',async function(req,res,next){
   try{
       let body = req.body
-      let new_user = new userModel({
-        user_name: body.user_name,
-        password: body.password,
-        fname: body.fname,
-        lname: body.lname,
-        age: body.age,
-        gender: body.gender
+      let new_product = new productsModel({
+        _id: new mongoose.Types.ObjectId(),
+        product_name: body.product_name,
+        detail: body.detail,
+        price: body.price,
+        amount: body.amount,
       })
-      let user = await new_user.save()
-      return res.status(201).send({
-          data: user, 
-          message: 'create success',
-          success: true,
+      await new_product.save()
+      .then(result => {
+        console.log(result)
+        return res.status(201).send({
+        message: 'create success',
+        success: true,
+        createdProduct: {
+          product_name: result.product_name,
+          price: result.price,
+          _id: result._id,
+          request: {
+            type: 'GET',
+            url: "http://localhost:3000/products/" + result._id
+          }
+        }
+        })
       })
-
   }catch (err){
       return res.status(500).send({
           message: err.message,
@@ -44,13 +55,13 @@ router.put("/:id", async function(req, res, next){
         error: ["id is not a ObjectId"]
       })
     }
-    await userModel.updateOne(
+    await productsModel.updateOne(
       { _id: mongoose.Types.ObjectId(id) },
       { $set: req.body }
     )
-    let user = await userModel.findById(id)
+    let product = await productsModel.findById(id)
     return res.status(201).send({
-      data: user,
+      data: product,
       message: "update success",
       success: true,
     })
@@ -73,10 +84,10 @@ router.delete("/:id", async function (req, res, next){
         error: ["id is not a ObjectId"]
       })
     }
-    await userModel.deleteOne({ _id: mongoose.Types.ObjectId(id)})
-    let user = await userModel.find()
+    await productsModel.deleteOne({ _id: mongoose.Types.ObjectId(id)})
+    let product = await productsModel.find()
     return res.status(201).send({
-      data: user,
+      data: product,
       message: "daelete success",
       success: true,
     })
@@ -91,9 +102,9 @@ router.delete("/:id", async function (req, res, next){
 //get all user
 router.get("/", async function(req, res, next){
   try{
-    let user = await userModel.find()
+    let product = await productsModel.find()
     return res.status(200).send({
-      data: user,
+      data: product,
       message: "success",
       success: true,
     })
@@ -116,9 +127,9 @@ router.get("/:id", async function(req, res, next){
         error: ["id is not a ObjectId"]
       })
     }
-    let user = await userModel.findById(id)
+    let product = await productsModel.findById(id)
     return res.status(200).send({
-      data: user,
+      data: product,
       message: "success",
       success: true,
     })

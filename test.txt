@@ -1,0 +1,26 @@
+  // let orders = req.body.order
+  // let a = orders.map((item)=>{
+  //   let productname = item.product_name
+  //   let amountname = item.amount
+  //   return { productname,amountname }
+  // })
+  // console.log(a)
+
+
+
+  const connection = mongoose.connection 
+connection.on('error', console.error.bind(console, 'connection error:'));
+// connection.once('open', async function () {
+
+//   const collection  = connection.db.collection("products");
+//   collection.find({}).toArray(function(err, data){
+    
+//       let totalamount = data.filter((amount, index) =>{
+//         // if(data.product_name == "caseiPad" || req.body.order.product_name == "caseiPad"){
+//         //   data.amount - req.body.order
+        
+//         // }
+//       })
+//   });
+  
+// });
