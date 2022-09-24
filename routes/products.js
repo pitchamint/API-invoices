@@ -2,8 +2,8 @@ var express = require('express');
 var router = express.Router();
 const mongoose = require('mongoose');
 const productsModel = require('../models/product')
+const invoiceModel = require('../models/invoice')
 const { route } = require('.');
-const { request } = require('../app');
 
 
 
@@ -13,29 +13,19 @@ router.post('/',async function(req,res,next){
   try{
       let body = req.body
       let new_product = new productsModel({
-        _id: new mongoose.Types.ObjectId(),
+        _id: mongoose.Types.ObjectId(),
         product_name: body.product_name,
         detail: body.detail,
         price: body.price,
-        amount: body.amount,
+        strock: body.strock,
       })
-      await new_product.save()
-      .then(result => {
-        console.log(result)
-        return res.status(201).send({
-        message: 'create success',
-        success: true,
-        createdProduct: {
-          product_name: result.product_name,
-          price: result.price,
-          _id: result._id,
-          request: {
-            type: 'GET',
-            url: "http://localhost:3000/products/" + result._id
-          }
-        }
-        })
+      let product = await new_product.save()
+      return res.status(201).send({
+          data: product, 
+          message: 'create success',
+          success: true,
       })
+
   }catch (err){
       return res.status(500).send({
           message: err.message,
@@ -58,6 +48,7 @@ router.put("/:id", async function(req, res, next){
     await productsModel.updateOne(
       { _id: mongoose.Types.ObjectId(id) },
       { $set: req.body }
+      
     )
     let product = await productsModel.findById(id)
     return res.status(201).send({

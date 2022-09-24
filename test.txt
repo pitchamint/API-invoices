@@ -24,3 +24,16 @@ connection.on('error', console.error.bind(console, 'connection error:'));
 //   });
   
 // });
+
+{
+    "buyer_name": "jj",
+    "order": [{"_id": "",
+               "product_name": "iPhone", 
+               "price" :19000, 
+               "amount": 1},
+              {"_id": "",
+               "product_name": "caseiPad", 
+               "price" :600, 
+               "amount": 1}
+            ]
+}

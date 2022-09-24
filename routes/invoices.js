@@ -5,30 +5,47 @@ const invoiceModel = require('../models/invoice')
 const productModel = require('../models/product')
 const { route } = require('.')
 
-
 /* GET users listing. */
 //create 
 router.post('/',async function(req,res,next){
-  productModel.findById(req.body.ObjectId)
-    .then(product => {
-      if(!product){
-        return res.status(404).json({
-          message: "Product not found"
-        })
-      }
+  
+  //บวกผลรวม
+  let product = req.body.order
+  let totalprices = 0
+    product.map((item)=>{
+        totalprices = totalprices + item.product.price
+        product.push(totalprices)
     })
+    
     try{
         let body = req.body
         let new_invoice = new invoiceModel({
+          _id: mongoose.Types.ObjectId(),
           buyer_name: body.buyer_name,
           order: body.order,
-          totalprice: totalprices
+          totalprice: totalprices,
+        })
+        // คำนวนยอดสินค้าคงคลัง
+        let product = req.body.order
+        product.map(async(item)=>{
+          let orderID = await item.product._id
+          console.log(orderID,"fffffff")
+          // let productData = await productModel.findById(mongoose.Types.ObjectId(orderID))
+          // let productStrock = productData.strock
+          // let orderAmount = item.amount
+          //   totalStrock = productStrock - orderAmount
+          //ยัดค่า totalstrock เข้าไปใน invoice order ก่อน
+          // await productModel.updateOne(
+          //   {_id: mongoose.Types.ObjectId(orderID)},
+          //   {$set:{strock:totalStrock}}
+          // )
+          
         })
         // let invoice = await new_invoice.save()
         return res.status(201).send({
-            data: invoice, 
+            // data: invoice, 
             message: 'create success',
-            success: true,
+            success: true
         })
   
     }catch (err){
@@ -37,24 +54,25 @@ router.post('/',async function(req,res,next){
             success: false,
         })
     }
-  })
+})
 
 //getAll
 router.get("/", async function(req, res, next){
-    try{
-      let invoice = await invoiceModel.find()
-      return res.status(200).send({
-        data: invoice,
-        message: "success",
-        success: true,
-      })
-    }catch (err){
-      return res.status(500).send({
-        message: "server error",
-        success: false,
-      })
-    }
-  })
+  try{
+    let invoice = await invoiceModel.find()
+    return res.status(200).send({
+      data: invoice,
+      message: "success",
+      success: true
+    })
+  }catch (err){
+    return res.status(500).send({
+      message: "server error",
+      success: "false"
+    })
+  }
+    
+})
 
 //getByID
 router.get("/:id", async function(req, res, next){
